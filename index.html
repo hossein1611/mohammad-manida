@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>دعوت‌نامه محمد و مانیدا</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&family=Vazirmatn:wght@300;400;500;600;700&family=Alex+Brush&display=swap');
+@font-face {
+  font-family: 'IranNastaliq';
+  src: url('https://cdn.fontcdn.ir/Fonts/IranNastaliq/IranNastaliq.eot');
+  src: url('https://cdn.fontcdn.ir/Fonts/IranNastaliq/IranNastaliq.woff2') format('woff2'),
+       url('https://cdn.fontcdn.ir/Fonts/IranNastaliq/IranNastaliq.woff') format('woff');
+  font-display: swap;
+}
+
+:root{
+ --bg:#eee9e1;
+ --paper:#fbf8f1;
+ --paper2:#f2eadf;
+ --ink:#4b4038;
+ --gold:#aa7b45;
+ --gold2:#d8b16a;
+ --wine:#64191c;
+ --muted:#85786c;
+ --seal:#c9953a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#29231f}
+body{font-family:Vazirmatn,sans-serif;color:var(--ink)}
+.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:var(--bg)}
+.track{height:100%;display:flex;direction:ltr;transition:transform .8s cubic-bezier(.6,.03,.18,1)}
+.slide{direction:rtl;min-width:100%;height:100%;position:relative;overflow:hidden;background:
+ radial-gradient(circle at 50% 28%,rgba(255,255,255,.85),transparent 42%),
+ linear-gradient(#f3f0ea,#e9e4dc)}
+.controls{position:absolute;z-index:100;left:13px;bottom:28px;display:flex;flex-direction:column;gap:11px}
+.ctrl{width:42px;height:42px;border-radius:50%;background:rgba(255,253,249,.93);border:1px solid #d6c8b8;box-shadow:0 5px 18px #5b4b3a22;display:grid;place-items:center;color:var(--gold);font-size:17px;cursor:pointer;backdrop-filter:blur(5px)}
+.ctrl.gold{background:var(--gold);color:#fff;border-color:var(--gold)}
+.dots{position:absolute;z-index:101;bottom:17px;left:50%;transform:translateX(-50%);display:flex;gap:7px;direction:ltr}
+.dot{width:7px;height:7px;border-radius:50%;border:1px solid #bda98e;background:transparent;transition:.3s;cursor:pointer}
+.dot.active{width:22px;border-radius:10px;background:var(--gold);border-color:var(--gold)}
+.arrow{position:absolute;z-index:100;top:50%;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#fffdf9cc;border:1px solid #d6c8b8;color:var(--gold);cursor:pointer;box-shadow:0 4px 14px #5b4b3a1c}
+.prev{right:10px}.next{left:10px}
+.hidden{opacity:0;pointer-events:none}
+.serif{font-family:'Noto Nastaliq Urdu',serif}
+.nastaliq{font-family:'IranNastaliq','Noto Nastaliq Urdu',serif}
+
+/* ===== SLIDE 1 - ENVELOPE ===== */
+#s1{background:linear-gradient(180deg,#eee9e1 0%,#e9e4dc 100%)}
+.envelope-stage{position:absolute;inset:0;display:grid;place-items:center}
+.envelope{position:relative;width:355px;height:610px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.envelope svg{position:absolute;width:345px;height:auto;filter:drop-shadow(0 22px 20px #5d4b392b);transition:opacity .55s,transform .9s}
+.env-svg.closed{opacity:1;transform:translateY(-4px)}
+.env-svg.broken,.env-svg.opened{opacity:0}
+.envelope.breaking .closed{animation:closeOut .7s ease forwards}
+.envelope.breaking .broken{opacity:1;animation:brokenIn .5s .58s both}
+.envelope.opening .broken{opacity:0;transform:scale(.98) translateY(-10px);transition:.5s}
+.envelope.opening .opened{opacity:1;animation:openIn 1.15s cubic-bezier(.2,.75,.2,1) both}
+
+@keyframes closeOut{
+ 0%{opacity:1;transform:scale(1) translateY(-4px)}
+ 35%{transform:scale(1.015) rotate(-.5deg)}
+ 100%{opacity:0;transform:scale(.97) translateY(-18px)}
+}
+@keyframes brokenIn{
+ from{opacity:0;transform:scale(.94) translateY(18px)}
+ to{opacity:1;transform:scale(1) translateY(0)}
+}
+@keyframes openIn{
+ 0%{opacity:0;transform:scale(.86) translateY(45px)}
+ 55%{opacity:1;transform:scale(1.015) translateY(-8px)}
+ 100%{opacity:1;transform:scale(1) translateY(0)}
+}
+
+.tap{position:absolute;z-index:10;bottom:83px;left:50%;transform:translateX(-50%);text-align:center;color:#5a4d42;font-size:14px;text-shadow:0 1px 4px rgba(255,255,255,0.5)}
+.tap .hand{display:block;font-size:29px;margin-top:7px;animation:hand 1.7s ease-in-out infinite}
+.tap .chev{font-size:28px;line-height:15px;opacity:.7;animation:down 1.4s infinite}
+@keyframes hand{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+@keyframes down{0%,100%{transform:translateY(0);opacity:.45}50%{transform:translateY(7px);opacity:1}}
+
+/* ===== SLIDE 2 - CARD ===== */
+.card-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:36px 28px 60px;overflow-y:auto}
+.inv-card{width:100%;max-width:360px;min-height:620px;position:relative;padding:75px 28px 55px;text-align:center;background:radial-gradient(circle at 12% 90%,rgba(170,123,69,.08),transparent 30%),radial-gradient(circle at 90% 12%,rgba(170,123,69,.08),transparent 28%),linear-gradient(145deg,#fffdf9,#f5eee4);border:1px solid #d9c29e;box-shadow:0 16px 45px #69533d20;border-radius:42% 42% 8px 8px}
+.inv-card:before{content:"";position:absolute;inset:9px;border:1px solid #cda86e;border-radius:38% 38% 6px 6px;pointer-events:none}
+
+.photo-frame{width:100px;height:100px;margin:0 auto 12px;border-radius:50%;border:3px solid var(--gold);padding:4px;background:var(--paper);box-shadow:0 4px 20px rgba(170,123,69,0.25);overflow:hidden;flex-shrink:0}
+.photo-placeholder{width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg,#f5eee4,#e8ddd0);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.photo-icon{font-size:32px;line-height:1}
+.photo-text{font-size:9px;color:#a08068;margin-top:2px;font-weight:500}
+.photo-frame img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+
+.bismillah{font-family:'IranNastaliq','Noto Nastaliq Urdu',serif;font-size:22px;color:#a67a48;margin-bottom:8px}
+.kicker{font-size:13px;line-height:2;color:#67594f}
+.names{font-family:'IranNastaliq','Noto Nastaliq Urdu',serif;font-size:48px;line-height:1.4;color:#aa7b45;margin:10px 0 6px}
+.amp{font-family:Alex Brush,cursive;font-size:32px;color:#b78b58}
+.heart{color:#a87545;font-size:18px;margin:2px 0 12px}
+
+.countdown{display:flex;justify-content:center;gap:6px;margin:6px 0 12px}
+.cd-item{background:var(--paper2);padding:4px 8px;border-radius:10px;min-width:44px;text-align:center;border:1px solid #dccfc0}
+.cd-item span{display:block;font-family:Vazirmatn,sans-serif;font-size:18px;font-weight:700;color:var(--gold);direction:ltr}
+.cd-item label{font-size:8px;color:var(--muted);display:block;margin-top:1px}
+
+.inv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:10px 0 14px}
+.info{border-left:1px solid #dbcdbb;padding:0 6px}.info:last-child{border:0}
+.icon{font-size:18px;color:#a77b48;margin-bottom:4px}
+.lbl{font-size:10px;color:#85786c}
+.val{font-size:12px;margin-top:4px;line-height:1.6}
+.hall{font-family:'IranNastaliq','Noto Nastaliq Urdu',serif;font-size:24px;color:#574940;margin-top:6px}
+.inv-bottom{font-size:12px;color:#82756a;line-height:2;margin-top:16px}
+.seal-line{width:90px;height:1px;background:#cdb58f;margin:8px auto;position:relative}
+.seal-line:after{content:"✦";position:absolute;left:50%;top:-10px;transform:translateX(-50%);background:#f8f2e9;padding:0 7px;color:#b58a55}
+
+/* ===== SLIDE 3 - INFO ===== */
+.info-screen,.map-screen{padding:70px 34px 60px;text-align:center}
+.section-title{font-family:'IranNastaliq','Noto Nastaliq Urdu',serif;font-size:30px;color:#625247;margin-bottom:5px}
+.subtitle{font-size:12px;color:#8a7c6f;margin-bottom:20px}
+.detail-box{max-width:350px;margin:auto;padding:24px 20px;background:#faf7f1d9;border:1px solid #d7c4a9;border-radius:26px;box-shadow:0 10px 30px #69533d12}
+.detail-row{padding:12px 0;border-bottom:1px solid #ded2c3}.detail-row:last-child{border:0}
+.detail-icon{color:#aa7b45;font-size:20px}
+.detail-title{font-size:11px;color:#8a7b6e;margin:4px}
+.detail-value{font-size:14px;line-height:2}
+.detail-value strong{font-family:'IranNastaliq','Noto Nastaliq Urdu',serif;font-size:22px}
+.note{font-family:'IranNastaliq','Noto Nastaliq Urdu',serif;font-size:17px;color:#685a50;margin-top:18px}
+
+/* ===== SLIDE 4 - MAP ===== */
+.map-buttons{max-width:350px;margin:22px auto 0;display:flex;flex-direction:column;gap:12px}
+.map-btn{display:flex;align-items:center;gap:13px;padding:12px 16px;background:#fffdf9df;border:1px solid #ddd0c0;border-radius:18px;box-shadow:0 7px 20px #69533d14;text-decoration:none;color:#554940;font-size:13px;cursor:pointer;transition:.2s}
+.map-btn:active{transform:scale(.98)}
+.map-icon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:21px;background:#f2e8da;flex-shrink:0}
+.map-btn span:last-child{flex:1;text-align:right}
+.map-arrow{color:#ad7f49}
+.address{font-size:12px;color:#817368;line-height:2;margin:20px auto;max-width:300px}
+.love{font-family:'IranNastaliq','Noto Nastaliq Urdu',serif;font-size:18px;color:#6c5b4e}
+
+/* ===== MODAL ===== */
+.modal{position:absolute;inset:0;background:#3e342eb0;backdrop-filter:blur(5px);z-index:200;display:none;align-items:center;justify-content:center;padding:24px}
+.modal.show{display:flex}
+.modal-card{width:100%;max-width:330px;background:#fffaf3;border-radius:25px;padding:27px 22px;box-shadow:0 25px 70px #0004;text-align:center;max-height:90vh;overflow-y:auto}
+.modal-card h3{font-family:'IranNastaliq','Noto Nastaliq Urdu',serif;font-size:26px;color:#5c4c41;margin-bottom:10px}
+.modal-card p{font-size:13px;line-height:2.1;color:#75685e}
+.close{margin-top:17px;border:0;background:var(--gold);color:#fff;padding:9px 23px;border-radius:20px;font-family:inherit;cursor:pointer}
+.modal-card .map-buttons{margin:10px 0}
+
+.music-modal .modal-card p{margin-bottom:17px}
+.choices{display:flex;gap:10px;justify-content:center}
+.choices button{border:0;color:#fff;padding:10px 25px;border-radius:12px;font-family:inherit;cursor:pointer}
+.yes{background:#b08351}
+.no{background:#9b7770}
+
+/* ===== FLORAL ===== */
+.flower{position:absolute;z-index:1;pointer-events:none;opacity:.7;mix-blend-mode:multiply}
+.flower.r{right:-88px;top:-45px;width:330px;transform:rotate(1deg)}
+.flower.l{left:-100px;bottom:-80px;width:350px;transform:scaleX(-1);opacity:.5}
+
+/* ===== RESPONSIVE ===== */
+@media(max-height:700px){
+ .envelope{transform:scale(.78)}
+ .inv-card{min-height:520px;padding-top:55px;padding-bottom:40px}
+ .names{font-size:40px}
+ .info-screen,.map-screen{padding-top:50px}
+ .photo-frame{width:80px;height:80px}
+ .countdown .cd-item{min-width:38px;padding:3px 6px}
+ .countdown .cd-item span{font-size:15px}
+}
+@media(max-width:380px){
+ .inv-card{padding-left:16px;padding-right:16px}
+ .names{font-size:36px}
+ .cd-item{min-width:34px}
+ .cd-item span{font-size:14px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="track" id="track">
+
+<!-- ====== SLIDE 1: ENVELOPE ====== -->
+<section class="slide" id="s1">
+  <div class="envelope-stage">
+    <div class="envelope" id="envelope">
+
+      <!-- پاکت بسته -->
+      <svg class="env-svg closed" viewBox="0 0 400 520" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="envGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f5efe8"/>
+            <stop offset="50%" stop-color="#ede5db"/>
+            <stop offset="100%" stop-color="#e0d5c8"/>
+          </linearGradient>
+          <linearGradient id="flapGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#f0e8de"/>
+            <stop offset="100%" stop-color="#dccfc0"/>
+          </linearGradient>
+          <radialGradient id="sealGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#dab85a"/>
+            <stop offset="40%" stop-color="#c9953a"/>
+            <stop offset="100%" stop-color="#a67a2e"/>
+          </radialGradient>
+          <radialGradient id="sealShine" cx="35%" cy="35%" r="50%">
+            <stop offset="0%" stop-color="#f5d98a" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#c9953a" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="shadow"><feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#00000022"/></filter>
+        </defs>
+        <rect x="20" y="20" width="360" height="460" rx="8" fill="url(#envGrad)" stroke="#cdbca8" stroke-width="1.5" filter="url(#shadow)"/>
+        <polygon points="20,20 200,140 380,20" fill="url(#flapGrad)" stroke="#cdbca8" stroke-width="1.5"/>
+        <polygon points="20,20 200,130 380,20" fill="none" stroke="#dccfc0" stroke-width="0.8"/>
+        <path d="M100,50 L200,120 L300,50" fill="none" stroke="#d5c5b3" stroke-width="0.5" stroke-dasharray="4,4"/>
+        <rect x="40" y="190" width="320" height="1.5" rx="1" fill="#d5c5b3" opacity="0.4"/>
+        <rect x="40" y="210" width="320" height="1.5" rx="1" fill="#d5c5b3" opacity="0.3"/>
+        <circle cx="200" cy="175" r="32" fill="url(#sealGrad)" stroke="#8a6928" stroke-width="1.5"/>
+        <circle cx="200" cy="175" r="28" fill="none" stroke="#e8c86a" stroke-width="0.8" opacity="0.5"/>
+        <circle cx="200" cy="175" r="22" fill="none" stroke="#e8c86a" stroke-width="0.5" opacity="0.3"/>
+        <g transform="translate(200,175)" stroke="#f5d98a" stroke-width="0.8" fill="none">
+          <path d="M0,-18 C8,-12 12,-4 8,4 C4,12 -4,12 -8,4 C-12,-4 -8,-12 0,-18Z" opacity="0.7"/>
+          <path d="M-18,0 C-12,-8 -4,-12 4,-8 C12,-4 12,4 4,8 C-4,12 -12,8 -18,0Z" opacity="0.7"/>
+          <circle cx="0" cy="0" r="3" fill="#f5d98a" opacity="0.5"/>
+        </g>
+        <circle cx="200" cy="175" r="32" fill="url(#sealShine)"/>
+        <text x="200" y="460" text-anchor="middle" font-family="'Noto Nastaliq Urdu',serif" font-size="16" fill="#8a7a6a" opacity="0.5">دعوت‌نامه</text>
+      </svg>
+
+      <!-- پاکت شکسته (همون SVG با افکت خرابی) -->
+      <svg class="env-svg broken" viewBox="0 0 400 520" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="envGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f5efe8"/><stop offset="50%" stop-color="#ede5db"/><stop offset="100%" stop-color="#e0d5c8"/>
+          </linearGradient>
+          <linearGradient id="flapGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#f0e8de"/><stop offset="100%" stop-color="#dccfc0"/>
+          </linearGradient>
+          <radialGradient id="sealGrad2" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#dab85a"/><stop offset="40%" stop-color="#c9953a"/><stop offset="100%" stop-color="#a67a2e"/>
+          </radialGradient>
+          <filter id="shadow2"><feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#00000022"/></filter>
+        </defs>
+        <rect x="20" y="20" width="360" height="460" rx="8" fill="url(#envGrad2)" stroke="#cdbca8" stroke-width="1.5" filter="url(#shadow2)"/>
+        <polygon points="20,20 200,140 380,20" fill="url(#flapGrad2)" stroke="#cdbca8" stroke-width="1.5"/>
+        <polygon points="20,20 200,130 380,20" fill="none" stroke="#dccfc0" stroke-width="0.8"/>
+        <rect x="40" y="190" width="320" height="1.5" rx="1" fill="#d5c5b3" opacity="0.4"/>
+        <rect x="40" y="210" width="320" height="1.5" rx="1" fill="#d5c5b3" opacity="0.3"/>
+        <circle cx="200" cy="175" r="32" fill="url(#sealGrad2)" stroke="#8a6928" stroke-width="1.5"/>
+        <g transform="translate(200,175)" stroke="#f5d98a" stroke-width="0.8" fill="none">
+          <path d="M0,-18 C8,-12 12,-4 8,4 C4,12 -4,12 -8,4 C-12,-4 -8,-12 0,-18Z" opacity="0.7"/>
+          <path d="M-18,0 C-12,-8 -4,-12 4,-8 C12,-4 12,4 4,8 C-4,12 -12,8 -18,0Z" opacity="0.7"/>
+          <circle cx="0" cy="0" r="3" fill="#f5d98a" opacity="0.5"/>
+        </g>
+        <circle cx="200" cy="175" r="32" fill="url(#sealShine)"/>
+        <!-- ترک‌های روی پاکت شکسته -->
+        <path d="M150,160 L180,200 L160,230" stroke="#d4a080" stroke-width="1.5" fill="none" opacity="0.4"/>
+        <path d="M240,150 L220,190 L250,220" stroke="#d4a080" stroke-width="1.5" fill="none" opacity="0.4"/>
+        <text x="200" y="460" text-anchor="middle" font-family="'Noto Nastaliq Urdu',serif" font-size="16" fill="#8a7a6a" opacity="0.5">دعوت‌نامه</text>
+      </svg>
+
+      <!-- پاکت باز شده (با خطوط باز شدن) -->
+      <svg class="env-svg opened" viewBox="0 0 400 520" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="envGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f5efe8"/><stop offset="50%" stop-color="#ede5db"/><stop offset="100%" stop-color="#e0d5c8"/>
+          </linearGradient>
+          <filter id="shadow3"><feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#00000022"/></filter>
+        </defs>
+        <rect x="20" y="20" width="360" height="460" rx="8" fill="url(#envGrad3)" stroke="#cdbca8" stroke-width="1.5" filter="url(#shadow3)"/>
+        <!-- فلپ باز شده (دو طرف) -->
+        <polygon points="20,20 200,140 380,20" fill="#ede5db" stroke="#cdbca8" stroke-width="1.2" opacity="0.6"/>
+        <polygon points="20,20 180,60 200,140 220,60 380,20" fill="none" stroke="#d5c5b3" stroke-width="0.8" stroke-dasharray="3,3"/>
+        <rect x="40" y="190" width="320" height="1.5" rx="1" fill="#d5c5b3" opacity="0.4"/>
+        <rect x="40" y="210" width="320" height="1.5" rx="1" fill="#d5c5b3" opacity="0.3"/>
+        <!-- مهر باز شده (دو نیمه) -->
+        <ellipse cx="185" cy="175" rx="16" ry="16" fill="#c9953a" stroke="#8a6928" stroke-width="1" opacity="0.7"/>
+        <ellipse cx="215" cy="175" rx="16" ry="16" fill="#c9953a" stroke="#8a6928" stroke-width="1" opacity="0.7"/>
+        <text x="200" y="460" text-anchor="middle" font-family="'Noto Nastaliq Urdu',serif" font-size="16" fill="#8a7a6a" opacity="0.5">دعوت‌نامه</text>
+        <!-- خطوط نور -->
+        <circle cx="200" cy="175" r="40" fill="none" stroke="#f5d98a" stroke-width="0.5" opacity="0.2"/>
+      </svg>
+
+      <div class="tap">مهر را لمس کنید<span class="hand">☝</span><span class="chev">⌄</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SLIDE 2: CARD ====== -->
+<section class="slide" id="s2">
+  <img class="flower r" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23d8b16a' opacity='0.15'/%3E%3Ccircle cx='100' cy='100' r='55' fill='%23d8b16a' opacity='0.1'/%3E%3Ccircle cx='100' cy='100' r='30' fill='%23d8b16a' opacity='0.08'/%3E%3C/svg%3E">
+  <img class="flower l" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23d8b16a' opacity='0.12'/%3E%3Ccircle cx='100' cy='100' r='50' fill='%23d8b16a' opacity='0.08'/%3E%3Ccircle cx='100' cy='100' r='25' fill='%23d8b16a' opacity='0.06'/%3E%3C/svg%3E">
+
+  <div class="card-wrap">
+    <div class="inv-card">
+
+      <!-- عکس دو نفره عروس و داماد -->
+      <div class="photo-frame" id="photoFrame">
+        <div class="photo-placeholder" id="photoPlaceholder">
+          <span class="photo-icon">👰🤵</span>
+          <span class="photo-text">عکس شما</span>
+        </div>
+      </div>
+
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="kicker">با نهایت عشق و احترام<br>شما را به جشن پیوند آسمانی‌مان دعوت می‌کنیم</div>
+
+      <div class="names">محمد <span class="amp">&amp;</span> مانیدا</div>
+      <div class="heart">♡</div>
+
+      <!-- شمارش معکوس -->
+      <div class="countdown" id="countdown">
+        <div class="cd-item"><span id="cd-days">۰۰</span><label>روز</label></div>
+        <div class="cd-item"><span id="cd-hours">۰۰</span><label>ساعت</label></div>
+        <div class="cd-item"><span id="cd-mins">۰۰</span><label>دقیقه</label></div>
+        <div class="cd-item"><span id="cd-secs">۰۰</span><label>ثانیه</label></div>
+      </div>
+
+      <div class="inv-grid">
+        <div class="info"><div class="icon">⌖</div><div class="lbl">تاریخ</div><div class="val">پنج‌شنبه<br>۲ مهر ۱۴۰۵</div></div>
+        <div class="info"><div class="icon">◷</div><div class="lbl">ساعت</div><div class="val">۱۹:۰۰</div></div>
+        <div class="info"><div class="icon">⌖</div><div class="lbl">مکان</div><div class="val">تالار گویا</div></div>
+      </div>
+
+      <div class="seal-line"></div>
+      <div class="inv-bottom">حضور شما باعث افتخار ماست<br>و این شب را برایمان جاودانه می‌کند.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SLIDE 3: INFO ====== -->
+<section class="slide" id="s3">
+  <img class="flower r" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23d8b16a' opacity='0.15'/%3E%3Ccircle cx='100' cy='100' r='55' fill='%23d8b16a' opacity='0.1'/%3E%3Ccircle cx='100' cy='100' r='30' fill='%23d8b16a' opacity='0.08'/%3E%3C/svg%3E">
+  <img class="flower l" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23d8b16a' opacity='0.12'/%3E%3Ccircle cx='100' cy='100' r='50' fill='%23d8b16a' opacity='0.08'/%3E%3Ccircle cx='100' cy='100' r='25' fill='%23d8b16a' opacity='0.06'/%3E%3C/svg%3E">
+  <div class="info-screen">
+    <div class="section-title">اطلاعات مراسم</div>
+    <div class="subtitle">جزئیات جشن و زمان دیدار</div>
+    <div class="detail-box">
+      <div class="detail-row"><div class="detail-icon">⌖</div><div class="detail-title">محل برگزاری</div><div class="detail-value"><strong>تالار گویا</strong><br>رشت، گیلان</div></div>
+      <div class="detail-row"><div class="detail-icon">◷</div><div class="detail-title">زمان برگزاری</div><div class="detail-value">پنج‌شنبه، ۲ مهر ۱۴۰۵<br>ساعت ۱۹:۰۰</div></div>
+      <div class="detail-row"><div class="detail-icon">♡</div><div class="detail-title">پیام ما</div><div class="detail-value">حضور شما باعث افتخار ماست</div></div>
+    </div>
+    <div class="note">منتظر دیدار شما هستیم</div>
+  </div>
+</section>
+
+<!-- ====== SLIDE 4: MAP ====== -->
+<section class="slide" id="s4">
+  <img class="flower
