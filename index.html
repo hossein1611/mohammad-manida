@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>محمد و مانیدا</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Vazirmatn:wght@300;400;500;600&family=Alex+Brush&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#f7f1e6;
+    --linen:#efe4d3;
+    --blush:#e7bfb8;
+    --rose-gold:#a9744f;
+    --seal:#b0603a;
+    --ink:#3a2e28;
+    --ink-soft:#6b5c52;
+    --accept:#4caf7d;
+    --decline:#c0524a;
+    --line:#c9b8a2;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    height:100%;
+    background:var(--ink);
+    font-family:'Vazirmatn', sans-serif;
+    color:var(--ink);
+    overflow:hidden;
+    position:fixed;
+    inset:0;
+    overscroll-behavior:none;
+  }
+  .app{
+    max-width:480px;
+    width:100%;
+    margin:0 auto;
+    position:relative;
+    height:100dvh;
+    height:100vh;
+    background:var(--cream);
+    overflow:hidden;
+  }
+
+  /* ---------- Slide track ---------- */
+  .track{
+    display:flex;
+    height:100%;
+    width:100%;
+    transition:transform .55s cubic-bezier(.6,.05,.2,1);
+    touch-action:pan-y;
+  }
+  section.slide{
+    flex:0 0 100%;
+    width:100%;
+    height:100%;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:60px 30px; position:relative;
+    overflow:hidden;
+  }
+
+  /* ---------- Music permission modal ---------- */
+  #music-modal{
+    position:fixed; inset:0; z-index:100;
+    background:rgba(58,46,40,0.35);
+    display:flex; align-items:center; justify-content:center;
+    backdrop-filter: blur(3px);
+    transition:opacity .4s ease;
+  }
+  #music-modal.hidden{opacity:0; pointer-events:none;}
+  .modal-card{
+    background:#fffdf9;
+    width:82%; max-width:320px;
+    border-radius:18px;
+    padding:26px 22px 22px;
+    text-align:center;
+    box-shadow:0 20px 50px rgba(0,0,0,.25);
+    animation:pop .35s ease;
+  }
+  @keyframes pop{from{transform:scale(.85); opacity:0;} to{transform:scale(1); opacity:1;}}
+  .modal-card h3{
+    font-family:'Noto Nastaliq Urdu', serif;
+    font-size:22px; margin-bottom:10px; color:var(--ink);
+  }
+  .modal-card p{
+    font-size:13.5px; color:var(--ink-soft); line-height:1.9; margin-bottom:18px;
+  }
+  .modal-buttons{display:flex; gap:12px; justify-content:center;}
+  .modal-buttons button{
+    border:none; border-radius:10px; padding:10px 26px;
+    font-family:'Vazirmatn'; font-size:14px; font-weight:600; color:#fff;
+    cursor:pointer; transition:transform .15s ease;
+  }
+  .modal-buttons button:active{transform:scale(.94);}
+  .btn-yes{background:var(--accept);}
+  .btn-no{background:var(--decline);}
+
+  /* ---------- Floating control stack ---------- */
+  .controls{
+    position:absolute; left:14px; bottom:22px; z-index:60;
+    display:flex; flex-direction:column; gap:10px;
+    align-items:center;
+  }
+  .ctrl-btn{
+    width:44px; height:44px; border-radius:50%;
+    background:#fff; border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 14px rgba(0,0,0,.12);
+    cursor:pointer; font-size:18px; color:var(--seal);
+    transition:transform .15s ease;
+  }
+  .ctrl-btn:active{transform:scale(.92);}
+  .ctrl-btn.accent{background:var(--seal); color:#fff;}
+
+  /* location popup */
+  #map-popup{
+    position:absolute; left:14px; bottom:80px; z-index:65;
+    background:#fffdf9; border-radius:16px; padding:14px 16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.18);
+    display:none; gap:14px; align-items:center;
+  }
+  #map-popup.show{display:flex;}
+  #map-popup a{
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    text-decoration:none; color:var(--ink); font-size:10.5px;
+  }
+  #map-popup .icon-circle{
+    width:38px;height:38px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px; color:#fff;
+  }
+  .ic-balad{background:#00a0dc;} .ic-neshan{background:#f7941e;} .ic-gmap{background:#4285f4;}
+  #map-popup .close-x{
+    font-size:16px; color:var(--ink-soft); cursor:pointer; align-self:flex-start;
+    padding:2px 6px;
+  }
+
+  /* info popup */
+  #info-popup{
+    position:absolute; inset:0; z-index:90; background:rgba(58,46,40,.35);
+    display:none; align-items:center; justify-content:center;
+  }
+  #info-popup.show{display:flex;}
+  #info-popup .modal-card p{text-align:right;}
+
+  /* ---------- Pagination dots ---------- */
+  .dots{
+    position:absolute; left:50%; bottom:16px; transform:translateX(-50%);
+    z-index:60; display:flex; gap:7px;
+  }
+  .dot{
+    width:6px; height:6px; border-radius:50%;
+    background:rgba(58,46,40,.25);
+    transition:all .3s ease;
+  }
+  .dot.active{background:var(--seal); width:18px; border-radius:4px;}
+
+  /* ---------- Side tap/nav arrows ---------- */
+  .nav-arrow{
+    position:absolute; top:50%; transform:translateY(-50%);
+    z-index:60; width:38px; height:38px; border-radius:50%;
+    background:rgba(255,253,249,.85); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--seal); font-size:16px; cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,.1);
+    transition:opacity .2s ease, transform .15s ease;
+  }
+  .nav-arrow:active{transform:translateY(-50%) scale(.9);}
+  .nav-arrow.prev{right:10px;}
+  .nav-arrow.next{left:10px;}
+  .nav-arrow.hidden{opacity:0; pointer-events:none;}
+
+  /* --- Envelope section --- */
+  #envelope-section{
+    background:
+      repeating-linear-gradient(45deg, rgba(169,116,79,.05) 0 2px, transparent 2px 4px),
+      var(--linen);
+  }
+  .envelope-wrap{
+    width:min(72vw, 250px); aspect-ratio:778/1195; position:relative; cursor:pointer;
+    transition:transform .7s cubic-bezier(.6,.05,.2,1), opacity .7s ease;
+  }
+  .env-photo{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; border-radius:6px;
+    box-shadow:0 15px 35px rgba(90,60,30,.25);
+  }
+  .seal-hotspot{
+    position:absolute; top:50%; left:31%; transform:translate(-50%,-50%);
+    width:24%; aspect-ratio:1/1; border-radius:50%;
+    z-index:5;
+    transition:opacity .5s ease, transform .5s ease;
+  }
+  .envelope-wrap.open .seal-hotspot{opacity:0; transform:translate(-50%,-50%) scale(.4) rotate(25deg);}
+  .envelope-wrap.open{transform:scale(1.04); opacity:0;}
+  .env-hint{
+    margin-top:26px; font-size:12.5px; letter-spacing:.5px; color:var(--ink-soft);
+    animation:blink 2s infinite;
+  }
+  @keyframes blink{0%,100%{opacity:.4;}50%{opacity:1;}}
+
+  /* --- Intro text --- */
+  #intro-section{background:var(--cream);}
+  .intro-title{
+    font-family:'Noto Nastaliq Urdu', serif;
+    font-size:30px; line-height:2; color:var(--ink); margin-bottom:22px;
+  }
+  .intro-sub{
+    font-size:14px; line-height:2.1; color:var(--ink-soft); max-width:280px;
+  }
+
+  /* --- Arch photo section --- */
+  #arch-section{background:var(--cream);}
+  .arch-frame{
+    width:220px; height:270px;
+    border-radius:110px 110px 6px 6px;
+    background:linear-gradient(180deg,#e4d6c1,#cbb99c);
+    display:flex; align-items:flex-end; justify-content:center; overflow:hidden;
+    box-shadow:0 10px 26px rgba(90,60,30,.18);
+    position:relative;
+  }
+  .arch-frame svg{width:78%; margin-bottom:6px;}
+  .couple-names-en{
+    font-family:'Alex Brush', cursive;
+    font-size:34px; color:#fff; position:absolute; bottom:14px;
+    text-shadow:0 2px 6px rgba(0,0,0,.35);
+  }
+  .arch-caption{
+    margin-top:26px; font-family:'Noto Nastaliq Urdu', serif;
+    font-size:19px; line-height:2; color:var(--ink); max-width:270px;
+  }
+
+  /* --- Names / details section --- */
+  #details-section{background:var(--cream);}
+  .names-fa{
+    font-family:'Noto Nastaliq Urdu', serif;
+    font-size:40px; color:var(--ink); margin-bottom:10px;
+  }
+  .divider{
+    display:flex; align-items:center; gap:8px; color:var(--rose-gold);
+    margin:8px 0 18px; font-size:20px;
+  }
+  .divider::before, .divider::after{
+    content:''; width:36px; height:1px; background:var(--line);
+  }
+  .venue-family{font-size:13px; color:var(--ink-soft); margin-bottom:22px; letter-spacing:.3px;}
+  .date-row{
+    display:flex; align-items:baseline; gap:10px; justify-content:center;
+    font-family:'Vazirmatn'; color:var(--ink); margin-bottom:6px;
+  }
+  .date-row .day-big{font-size:34px; font-weight:600; border-inline:1px solid var(--line); padding:0 12px;}
+  .date-row span{font-size:14px; color:var(--ink-soft);}
+  .time-row{font-size:15px; color:var(--ink-soft); margin-bottom:16px;}
+  .venue-name{
+    font-family:'Noto Nastaliq Urdu', serif; font-size:22px; color:var(--ink); margin-bottom:14px;
+  }
+  .rsvp-text{font-size:12.5px; line-height:2; color:var(--ink-soft); max-width:270px;}
+
+  /* --- Closing / branch section --- */
+  #closing-section{background:var(--cream);}
+  .branch{width:90px; margin-bottom:18px; opacity:.7;}
+  .closing-text{
+    font-family:'Noto Nastaliq Urdu', serif; font-size:19px; line-height:2.1;
+    color:var(--ink); max-width:270px; margin-bottom:26px;
+  }
+  .bw-frame{
+    width:210px; height:250px; border-radius:4px; overflow:hidden;
+    filter:grayscale(1) contrast(1.05);
+    box-shadow:0 12px 26px rgba(0,0,0,.18);
+    background:linear-gradient(180deg,#cfcfcf,#9c9c9c);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .bw-frame svg{width:60%;}
+  .replay-btn{
+    margin-top:34px; border:1px solid var(--rose-gold); color:var(--rose-gold);
+    background:none; padding:9px 22px; border-radius:24px; font-family:'Vazirmatn';
+    font-size:12.5px; cursor:pointer;
+  }
+
+  .edit-note{
+    position:absolute; bottom:8px; font-size:9.5px; color:#c9b8a2; letter-spacing:.3px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Music permission modal -->
+  <div id="music-modal">
+    <div class="modal-card">
+      <h3>پخش موسیقی</h3>
+      <p>آیا مایلید به پخش موسیقی ویدیو صوتی گوش دهید؟</p>
+      <div class="modal-buttons">
+        <button class="btn-no" id="music-no">خیر</button>
+        <button class="btn-yes" id="music-yes">بله</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info popup -->
+  <div id="info-popup">
+    <div class="modal-card">
+      <h3>محمد و مانیدا</h3>
+      <p>
+        پنج‌شنبه، ۲ مهر ۱۴۰۵ برابر با ۲۴ سپتامبر ۲۰۲۶، ساعت ۱۹:۰۰<br>
+        محل مراسم: <span id="info-venue">[نام تالار]</span><br><br>
+        این دعوت‌نامه مخصوص شماست؛ خوشحال می‌شویم در این شب کنارمان باشید.
+      </p>
+      <div class="modal-buttons"><button class="btn-yes" id="info-close">متوجه شدم</button></div>
+    </div>
+  </div>
+
+  <!-- Floating controls -->
+  <div class="controls">
+    <div class="ctrl-btn" id="btn-mute" title="صدا">🔈</div>
+    <div class="ctrl-btn" id="btn-play" title="پخش/توقف">⏸</div>
+    <div class="ctrl-btn accent" id="btn-info" title="اطلاعات">ⓘ</div>
+    <div class="ctrl-btn accent" id="btn-location" title="مسیر">📍</div>
+  </div>
+
+  <div id="map-popup">
+    <span class="close-x" id="map-close">✕</span>
+    <a href="https://balademo.example.com" target="_blank">
+      <span class="icon-circle ic-balad">🧭</span> بلد
+    </a>
+    <a href="https://neshan.org" target="_blank">
+      <span class="icon-circle ic-neshan">📍</span> نشان
+    </a>
+    <a href="https://www.google.com/maps" target="_blank">
+      <span class="icon-circle ic-gmap">🗺️</span> گوگل‌مپ
+    </a>
+  </div>
+
+  <!-- Nav arrows -->
+  <div class="nav-arrow prev" id="nav-prev">›</div>
+  <div class="nav-arrow next" id="nav-next">‹</div>
+
+  <!-- Pagination dots -->
+  <div class="dots" id="dots"></div>
+
+  <!-- ---------- SLIDE TRACK ---------- -->
+  <div class="track" id="track">
+
+    <!-- 1. Envelope -->
+    <section id="envelope-section" class="slide">
+      <div class="envelope-wrap" id="envelope">
+        <img class="env-photo" src="envelope.webp" alt="پاکت دعوت‌نامه">
+        <div class="seal-hotspot"></div>
+      </div>
+      <div class="env-hint">برای باز کردن دعوت‌نامه، روی مهر لمس کنید</div>
+    </section>
+
+    <!-- 2. Intro -->
+    <section id="intro-section" class="slide">
+      <div class="intro-title">به نام خالق زیبایی‌ها</div>
+      <div class="intro-sub">با عشق، شما را به جشن آغاز قصه‌ی دو دلمان دعوت می‌کنیم</div>
+    </section>
+
+    <!-- 3. Arch couple photo -->
+    <section id="arch-section" class="slide">
+      <div class="arch-frame">
+        <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="35" cy="28" r="13" fill="#3a2e28"/>
+          <path d="M20 72 Q35 44 50 72 L50 118 L20 118 Z" fill="#3a2e28"/>
+          <circle cx="63" cy="32" r="12" fill="#2c231d"/>
+          <path d="M50 78 Q63 52 79 78 L79 118 L50 118 Z" fill="#2c231d"/>
+        </svg>
+        <div class="couple-names-en">Mohammad &amp; Manida</div>
+      </div>
+      <div class="arch-caption">دو قلب، یک رویا،<br>و آغاز یک زندگی...</div>
+    </section>
+
+    <!-- 5. Names / date / venue -->
+    <section id="details-section" class="slide">
+      <div class="names-fa">محمد و مانیدا</div>
+      <div class="divider">♥</div>
+      <div class="venue-family">[خانواده محمد] &nbsp;-&nbsp; [خانواده مانیدا]</div>
+      <div class="date-row">
+        <span>پنج‌شنبه</span>
+        <span class="day-big">۲۴</span>
+        <span>سپتامبر</span>
+      </div>
+      <div class="time-row">ساعت ۱۹:۰۰ &nbsp;|&nbsp; ۲ مهر ۱۴۰۵</div>
+      <div class="venue-name">[نام تالار]</div>
+      <div class="rsvp-text">در صورتی که افتخار میزبانی شما را داریم، لطفا ما را مطلع فرمایید.</div>
+    </section>
+
+    <!-- 6. Closing -->
+    <section id="closing-section" class="slide">
+      <svg class="branch" viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 20 Q50 5 95 20" stroke="#a9744f" stroke-width="1" fill="none"/>
+        <circle cx="50" cy="12" r="3" fill="#a9744f"/>
+      </svg>
+      <div class="closing-text">حضور شما باعث افتخار است؛<br>این جشن را جاودانه می‌سازد</div>
+      <div class="bw-frame">
+        <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="35" cy="28" r="13" fill="#fff"/>
+          <path d="M20 72 Q35 44 50 72 L50 118 L20 118 Z" fill="#fff"/>
+          <circle cx="63" cy="32" r="12" fill="#eee"/>
+          <path d="M50 78 Q63 52 79 78 L79 118 L50 118 Z" fill="#eee"/>
+        </svg>
+      </div>
+      <button class="replay-btn" id="replay">پخش دوباره از ابتدا</button>
+    </section>
+
+  </div>
+</div>
+
+<audio id="bg-audio" loop preload="none">
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  const musicModal = document.getElementById('music-modal');
+  const audio = document.getElementById('bg-audio');
+  const btnMute = document.getElementById('btn-mute');
+  const btnPlay = document.getElementById('btn-play');
+
+  document.getElementById('music-yes').onclick = () => {
+    musicModal.classList.add('hidden');
+    audio.play().catch(()=>{});
+  };
+  document.getElementById('music-no').onclick = () => {
+    musicModal.classList.add('hidden');
+    audio.muted = true;
+    btnMute.textContent = '🔇';
+  };
+
+  btnMute.onclick = () => {
+    audio.muted = !audio.muted;
+    btnMute.textContent = audio.muted ? '🔇' : '🔈';
+  };
+  btnPlay.onclick = () => {
+    if(audio.paused){ audio.play().catch(()=>{}); btnPlay.textContent='⏸'; }
+    else { audio.pause(); btnPlay.textContent='▶'; }
+  };
+
+  // info popup
+  const infoPopup = document.getElementById('info-popup');
+  document.getElementById('btn-info').onclick = () => infoPopup.classList.add('show');
+  document.getElementById('info-close').onclick = () => infoPopup.classList.remove('show');
+
+  // map popup
+  const mapPopup = document.getElementById('map-popup');
+  document.getElementById('btn-location').onclick = () => mapPopup.classList.toggle('show');
+  document.getElementById('map-close').onclick = () => mapPopup.classList.remove('show');
+
+  /* ============ SLIDESHOW ENGINE ============ */
+  const track = document.getElementById('track');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dotsWrap = document.getElementById('dots');
+  const navPrev = document.getElementById('nav-prev');
+  const navNext = document.getElementById('nav-next');
+  let current = 0;
+
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(d);
+  });
+  const dotEls = Array.from(dotsWrap.children);
+
+  function render(){
+    track.style.transform = `translateX(${current * 100}%)`;
+    dotEls.forEach((d,i) => d.classList.toggle('active', i === current));
+    navPrev.classList.toggle('hidden', current === 0);
+    navNext.classList.toggle('hidden', current === slides.length - 1);
+  }
+
+  function goTo(i){
+    current = Math.max(0, Math.min(slides.length - 1, i));
+    render();
+  }
+  function next(){ if(current < slides.length - 1) goTo(current + 1); }
+  function prev(){ if(current > 0) goTo(current - 1); }
+
+  navNext.onclick = next;
+  navPrev.onclick = prev;
+
+  // keyboard support (desktop)
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'ArrowLeft') next();
+    if(e.key === 'ArrowRight') prev();
+  });
+
+  // swipe support
+  let touchStartX = 0, touchStartY = 0, touching = false;
+  track.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touching = true;
+  }, {passive:true});
+  track.addEventListener('touchend', (e) => {
+    if(!touching) return;
+    touching = false;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if(Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) next(); else prev();
+    }
+  }, {passive:true});
+
+  // envelope open (click on the wax seal) -> advance to slide 2
+  const envelope = document.getElementById('envelope');
+  const sealHotspot = document.querySelector('.seal-hotspot');
+  sealHotspot.addEventListener('click', () => {
+    if(envelope.classList.contains('open')) return;
+    envelope.classList.add('open');
+    setTimeout(() => { next(); }, 700);
+  });
+
+  // replay
+  document.getElementById('replay').onclick = () => {
+    envelope.classList.remove('open');
+    goTo(0);
+  };
+
+  render();
+</script>
+</body>
+</html>
