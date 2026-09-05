@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>محمد و مانیدا</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Vazirmatn:wght@300;400;500;600&family=Alex+Brush&family=Gulzar&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#ffffff;
+    --linen:#f4f4f4;
+    --blush:#ececec;
+    --rose-gold:#1a1a1a;
+    --seal:#111111;
+    --ink:#111111;
+    --ink-soft:#5a5a5a;
+    --accept:#1a1a1a;
+    --decline:#9a9a9a;
+    --line:#e0e0e0;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    height:100%;
+    background:var(--ink);
+    font-family:'Vazirmatn', sans-serif;
+    color:var(--ink);
+    overflow:hidden;
+    position:relative;
+    overscroll-behavior:none;
+  }
+  .app{
+    max-width:480px;
+    width:100%;
+    margin:0 auto;
+    position:relative;
+    height:100dvh;
+    height:100vh;
+    background:var(--cream);
+    overflow:hidden;
+  }
+
+  /* ---------- Slide track (vertical scroll-snap) ---------- */
+  .track{
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    width:100%;
+    overflow-y:scroll;
+    overflow-x:hidden;
+    scroll-snap-type:y mandatory;
+    scroll-behavior:smooth;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .track::-webkit-scrollbar{display:none;}
+  section.slide{
+    flex:0 0 100%;
+    width:100%;
+    height:100%;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:60px 30px; position:relative;
+    overflow:hidden;
+    scroll-snap-align:start;
+    scroll-snap-stop:always;
+  }
+
+  /* ---------- Music permission modal ---------- */
+  #music-modal{
+    position:fixed; inset:0; z-index:1000;
+    background:rgba(0,0,0,0.4);
+    display:flex; align-items:center; justify-content:center;
+    backdrop-filter: blur(3px);
+    transition:opacity .4s ease;
+  }
+  #music-modal.hidden{opacity:0; pointer-events:none;}
+  .modal-card{
+    background:#ffffff;
+    width:82%; max-width:320px;
+    border-radius:18px;
+    padding:26px 22px 22px;
+    text-align:center;
+    box-shadow:0 20px 50px rgba(0,0,0,.25);
+    animation:pop .35s ease;
+  }
+  @keyframes pop{from{transform:scale(.85); opacity:0;} to{transform:scale(1); opacity:1;}}
+  .modal-card h3{
+    font-family:'Gulzar', 'Noto Nastaliq Urdu', serif;
+    font-size:24px; margin-bottom:10px; color:var(--ink);
+  }
+  .modal-card p{
+    font-size:13.5px; color:var(--ink-soft); line-height:1.9; margin-bottom:18px;
+  }
+  .modal-buttons{display:flex; gap:12px; justify-content:center;}
+  .modal-buttons button{
+    border:none; border-radius:10px; padding:10px 26px;
+    font-family:'Vazirmatn'; font-size:14px; font-weight:600; color:#fff;
+    cursor:pointer; transition:transform .15s ease;
+  }
+  .modal-buttons button:active{transform:scale(.94);}
+  .btn-yes{background:var(--accept);}
+  .btn-no{background:var(--decline);}
+
+  /* ---------- Floating control stack ---------- */
+  .controls{
+    position:absolute;
+    right:14px;
+    bottom:22px;
+    z-index:100;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    align-items:center;
+    pointer-events:auto;
+  }
+  .ctrl-btn{
+    width:44px; height:44px; border-radius:50%;
+    background:rgba(255,255,255,.95); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 14px rgba(0,0,0,.15);
+    cursor:pointer; font-size:18px; color:var(--seal);
+    transition:transform .15s ease;
+    -webkit-tap-highlight-color:transparent;
+    user-select:none;
+    pointer-events:auto;
+  }
+  .ctrl-btn:active{transform:scale(.92);}
+  .ctrl-btn.accent{background:var(--seal); color:#fff; border-color:var(--seal);}
+
+  /* location buttons (inline, inside the details slide) */
+  .location-label{
+    font-size:12px; color:var(--ink-soft); margin-bottom:10px;
+  }
+  .location-links{
+    display:flex; gap:20px; justify-content:center; margin:0 0 20px;
+  }
+  .location-links a{
+    display:flex; flex-direction:column; align-items:center; gap:5px;
+    text-decoration:none; color:var(--ink); font-size:10.5px;
+  }
+  .location-links .icon-circle{
+    width:44px;height:44px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:#ffffff;
+    border:1px solid var(--line);
+    box-shadow:0 4px 12px rgba(0,0,0,.12);
+    overflow:hidden;
+  }
+  .location-links .icon-circle img{
+    width:26px; height:26px; object-fit:contain;
+    display:block;
+  }
+
+  /* info popup */
+  #info-popup{
+    position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.4);
+    display:none; align-items:center; justify-content:center;
+  }
+  #info-popup.show{display:flex;}
+  #info-popup .modal-card p{text-align:right;}
+
+  /* ---------- Pagination dots ---------- */
+  .dots{
+    position:absolute; left:50%; bottom:16px; transform:translateX(-50%);
+    z-index:100; display:flex; gap:7px;
+    pointer-events:auto;
+  }
+  .dot{
+    width:6px; height:6px; border-radius:50%;
+    background:rgba(0,0,0,.22);
+    transition:all .3s ease;
+    cursor:pointer;
+  }
+  .dot.active{background:var(--seal); width:18px; border-radius:4px;}
+
+  /* --- Envelope section --- */
+  #envelope-section{
+    padding:0;
+    background:var(--linen);
+  }
+  .envelope-wrap{
+    position:absolute; inset:0; width:100%; height:100%; cursor:pointer;
+    overflow:hidden;
+  }
+  .env-photo{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; display:block;
+    transition:transform .8s cubic-bezier(.6,.05,.2,1);
+  }
+  .env-photo.env-left{clip-path:inset(0 50% 0 0);}
+  .env-photo.env-right{clip-path:inset(0 0 0 50%);}
+  .envelope-wrap.open .env-photo.env-left{transform:translateX(-100%);}
+  .envelope-wrap.open .env-photo.env-right{transform:translateX(100%);}
+  .seal-hotspot{
+    position:absolute; border-radius:50%;
+    z-index:10;
+    transition:opacity .4s ease, transform .4s ease;
+    cursor:pointer;
+  }
+  .envelope-wrap.open .seal-hotspot{opacity:0; transform:translate(-50%,-50%) scale(.4) rotate(25deg);}
+  .env-hint{
+    position:absolute; left:50%; bottom:40px; transform:translateX(-50%);
+    z-index:6; font-size:12.5px; letter-spacing:.5px; color:#ffffff;
+    text-shadow:0 1px 6px rgba(0,0,0,.5);
+    animation:blink 2s infinite;
+    transition:opacity .4s ease;
+  }
+  .envelope-wrap.open ~ .env-hint{opacity:0;}
+  @keyframes blink{0%,100%{opacity:.4;}50%{opacity:1;}}
+
+  /* --- Intro text --- */
+  #intro-section{background:var(--cream);}
+  .intro-title{
+    font-family:'Gulzar', 'Noto Nastaliq Urdu', serif;
+    font-size:32px; line-height:2.1; color:var(--ink); margin-bottom:22px;
+  }
+  .intro-sub{
+    font-size:14px; line-height:2.1; color:var(--ink-soft); max-width:280px;
+  }
+
+  /* --- Arch photo section --- */
+  #arch-section{background:var(--cream);}
+  .arch-frame{
+    width:220px; height:270px;
+    border-radius:110px 110px 6px 6px;
+    background:linear-gradient(180deg,#2b2b2b,#0a0a0a);
+    display:flex; align-items:flex-end; justify-content:center; overflow:hidden;
+    box-shadow:0 10px 26px rgba(0,0,0,.18);
+    position:relative;
+  }
+  .arch-frame svg{width:78%; margin-bottom:6px;}
+  .couple-names-en{
+    font-family:'Alex Brush', cursive;
+    font-size:34px; color:#fff; position:absolute; bottom:14px;
+    text-shadow:0 2px 6px rgba(0,0,0,.35);
+  }
+  .arch-caption{
+    margin-top:26px; font-family:'Gulzar', 'Noto Nastaliq Urdu', serif;
+    font-size:21px; line-height:2.1; color:var(--ink); max-width:270px;
+  }
+
+  /* --- Names / details section --- */
+  #details-section{background:var(--cream);}
+  .names-fa{
+    font-family:'Gulzar', 'Noto Nastaliq Urdu', serif;
+    font-size:46px; color:var(--ink); margin-bottom:10px;
+  }
+  .divider{
+    display:flex; align-items:center; gap:8px; color:var(--rose-gold);
+    margin:8px 0 18px; font-size:20px;
+  }
+  .divider::before, .divider::after{
+    content:''; width:36px; height:1px; background:var(--line);
+  }
+  .venue-family{font-size:13px; color:var(--ink-soft); margin-bottom:22px; letter-spacing:.3px;}
+  .date-row{
+    display:flex; align-items:baseline; gap:10px; justify-content:center;
+    font-family:'Vazirmatn'; color:var(--ink); margin-bottom:6px;
+  }
+  .date-row .day-big{font-size:34px; font-weight:600; border-inline:1px solid var(--line); padding:0 12px;}
+  .date-row span{font-size:14px; color:var(--ink-soft);}
+  .time-row{font-size:15px; color:var(--ink-soft); margin-bottom:16px;}
+  .venue-name{
+    font-family:'Gulzar', 'Noto Nastaliq Urdu', serif; font-size:26px; color:var(--ink); margin-bottom:14px;
+  }
+  .rsvp-text{font-size:12.5px; line-height:2; color:var(--ink-soft); max-width:270px;}
+
+  /* --- Countdown --- */
+  .countdown{
+    display:flex; flex-direction:row-reverse; gap:10px; justify-content:center; margin:18px 0 22px;
+  }
+  .cd-box{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    width:58px; height:58px; border-radius:14px;
+    background:linear-gradient(160deg,#ffffff,var(--linen));
+    border:1px solid var(--line);
+    box-shadow:0 6px 16px rgba(0,0,0,.1), inset 0 1px 0 rgba(255,255,255,.6);
+    position:relative;
+  }
+  .cd-box .cd-num{
+    font-family:'Vazirmatn'; font-weight:600; font-size:20px; color:var(--seal);
+    font-variant-numeric:tabular-nums;
+  }
+  .cd-box .cd-label{
+    font-size:9.5px; color:var(--ink-soft); margin-top:2px; letter-spacing:.2px;
+  }
+  .cd-sep{
+    align-self:center; color:var(--line); font-size:16px; margin:0 -2px;
+  }
+
+  /* --- Closing / branch section --- */
+  #closing-section{background:var(--cream);}
+  .branch{width:90px; margin-bottom:18px; opacity:.7;}
+  .closing-text{
+    font-family:'Gulzar', 'Noto Nastaliq Urdu', serif; font-size:21px; line-height:2.2;
+    color:var(--ink); max-width:270px; margin-bottom:26px;
+  }
+  .bw-frame{
+    width:210px; height:250px; border-radius:4px; overflow:hidden;
+    filter:grayscale(1) contrast(1.05);
+    box-shadow:0 12px 26px rgba(0,0,0,.18);
+    background:linear-gradient(180deg,#cfcfcf,#9c9c9c);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .bw-frame svg{width:60%;}
+  .replay-btn{
+    margin-top:34px; border:1px solid var(--rose-gold); color:var(--rose-gold);
+    background:none; padding:9px 22px; border-radius:24px; font-family:'Vazirmatn';
+    font-size:12.5px; cursor:pointer;
+  }
+
+  /* Responsive fixes for mobile */
+  @media (max-width: 480px) {
+    .controls {
+      right: 10px;
+      bottom: 16px;
+      gap: 8px;
+    }
+    .ctrl-btn {
+      width: 40px;
+      height: 40px;
+      font-size: 16px;
+    }
+    .location-links {
+      gap: 14px;
+    }
+    .location-links .icon-circle {
+      width: 36px;
+      height: 36px;
+    }
+    .location-links .icon-circle img {
+      width: 22px;
+      height: 22px;
+    }
+    .location-links a {
+      font-size: 9px;
+    }
+    .dots {
+      bottom: 12px;
+      gap: 6px;
+    }
+    .dot {
+      width: 5px;
+      height: 5px;
+    }
+    .dot.active {
+      width: 16px;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .controls {
+      right: 6px;
+      bottom: 12px;
+      gap: 6px;
+    }
+    .ctrl-btn {
+      width: 36px;
+      height: 36px;
+      font-size: 14px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Music permission modal -->
+  <div id="music-modal">
+    <div class="modal-card">
+      <h3>پخش موسیقی</h3>
+      <p>آیا مایلید به پخش موسیقی ویدیو صوتی گوش دهید؟</p>
+      <div class="modal-buttons">
+        <button class="btn-no" id="music-no">خیر</button>
+        <button class="btn-yes" id="music-yes">بله</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info popup -->
+  <div id="info-popup">
+    <div class="modal-card">
+      <h3>محمد و مانیدا</h3>
+      <p>
+        پنج‌شنبه، ۲ مهر ۱۴۰۵ برابر با ۲۴ سپتامبر ۲۰۲۶، ساعت ۱۹:۰۰<br>
+        محل مراسم: <span id="info-venue">تالار گویا</span><br><br>
+        این دعوت‌نامه مخصوص شماست؛ خوشحال می‌شویم در این شب کنارمان باشید.
+      </p>
+      <div class="modal-buttons"><button class="btn-yes" id="info-close">متوجه شدم</button></div>
+    </div>
+  </div>
+
+  <!-- Floating controls -->
+  <div class="controls">
+    <div class="ctrl-btn" id="btn-mute" title="صدا">🔈</div>
+    <div class="ctrl-btn" id="btn-play" title="پخش/توقف">⏸</div>
+    <div class="ctrl-btn accent" id="btn-info" title="اطلاعات">ⓘ</div>
+  </div>
+
+  <!-- Pagination dots -->
+  <div class="dots" id="dots"></div>
+
+  <!-- ---------- SLIDE TRACK ---------- -->
+  <div class="track" id="track">
+
+    <!-- 1. Envelope -->
+    <section id="envelope-section" class="slide">
+      <div class="envelope-wrap" id="envelope">
+        <img class="env-photo env-left" id="envelope-img" src="envelope.webp" alt="پاکت دعوت‌نامه">
+        <img class="env-photo env-right" src="envelope.webp" alt="" aria-hidden="true">
+        <div class="seal-hotspot" id="seal-hotspot"></div>
+      </div>
+      <div class="env-hint">برای باز کردن دعوت‌نامه، روی مهر لمس کنید</div>
+    </section>
+
+    <!-- 2. Intro -->
+    <section id="intro-section" class="slide">
+      <div class="intro-title">به نام خالق زیبایی‌ها</div>
+      <div class="intro-sub">با عشق، شما را به جشن آغاز قصه‌ی دو دلمان دعوت می‌کنیم</div>
+    </section>
+
+    <!-- 3. Arch couple photo -->
+    <section id="arch-section" class="slide">
+      <div class="arch-frame">
+        <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="35" cy="28" r="13" fill="#161616"/>
+          <path d="M20 72 Q35 44 50 72 L50 118 L20 118 Z" fill="#161616"/>
+          <circle cx="63" cy="32" r="12" fill="#000000"/>
+          <path d="M50 78 Q63 52 79 78 L79 118 L50 118 Z" fill="#000000"/>
+        </svg>
+        <div class="couple-names-en">Mohammad &amp; Manida</div>
+      </div>
+      <div class="arch-caption">دو قلب، یک رویا،<br>و آغاز یک زندگی...</div>
+    </section>
+
+    <!-- 5. Names / date / venue -->
+    <section id="details-section" class="slide">
+      <div class="names-fa">محمد و مانیدا</div>
+      <div class="divider">♥</div>
+      <div class="venue-family">علیپور · زارع دلاور</div>
+      <div class="date-row">
+        <span>پنج‌شنبه</span>
+        <span class="day-big">۲</span>
+        <span>مهر</span>
+      </div>
+      <div class="time-row">ساعت ۱۹:۰۰</div>
+      <div class="venue-name">تالار گویا</div>
+
+      <div class="location-label">مسیر رسیدن</div>
+      <div class="location-links">
+        <a href="https://balad.ir/p/%D8%AA%D8%A7%D9%84%D8%A7%D8%B1-%D8%B9%D8%B1%D9%88%D8%B3%DB%8C-%DA%AF%D9%88%DB%8C%D8%A7-rasht_ceremonial-services-PCIGpgk9KTcf68" target="_blank">
+          <span class="icon-circle"><img src="https://www.google.com/s2/favicons?domain=balad.ir&sz=128" alt="بلد" loading="lazy"></span> بلد
+        </a>
+        <a href="https://neshan.org/maps/places/28d8a21eb0fc7a81bf0f55a9cc035a55" target="_blank">
+          <span class="icon-circle"><img src="https://www.google.com/s2/favicons?domain=neshan.org&sz=128" alt="نشان" loading="lazy"></span> نشان
+        </a>
+        <a href="https://maps.app.goo.gl/4FkF75d9cViF82Sv5" target="_blank">
+          <span class="icon-circle"><img src="https://www.google.com/s2/favicons?domain=maps.google.com&sz=128" alt="گوگل‌مپ" loading="lazy"></span> گوگل‌مپ
+        </a>
+      </div>
+
+      <div class="countdown" id="countdown">
+        <div class="cd-box"><span class="cd-num" id="cd-days">--</span><span class="cd-label">روز</span></div>
+        <span class="cd-sep">:</span>
+        <div class="cd-box"><span class="cd-num" id="cd-hours">--</span><span class="cd-label">ساعت</span></div>
+        <span class="cd-sep">:</span>
+        <div class="cd-box"><span class="cd-num" id="cd-mins">--</span><span class="cd-label">دقیقه</span></div>
+        <span class="cd-sep">:</span>
+        <div class="cd-box"><span class="cd-num" id="cd-secs">--</span><span class="cd-label">ثانیه</span></div>
+      </div>
+
+      <div class="rsvp-text">در صورتی که افتخار میزبانی شما را داریم، لطفا ما را مطلع فرمایید.</div>
+    </section>
+
+    <!-- 6. Closing -->
+    <section id="closing-section" class="slide">
+      <svg class="branch" viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 20 Q50 5 95 20" stroke="#1a1a1a" stroke-width="1" fill="none"/>
+        <circle cx="50" cy="12" r="3" fill="#1a1a1a"/>
+      </svg>
+      <div class="closing-text">حضور شما باعث افتخار است؛<br>این جشن را جاودانه می‌سازد</div>
+      <div class="bw-frame">
+        <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="35" cy="28" r="13" fill="#fff"/>
+          <path d="M20 72 Q35 44 50 72 L50 118 L20 118 Z" fill="#fff"/>
+          <circle cx="63" cy="32" r="12" fill="#eee"/>
+          <path d="M50 78 Q63 52 79 78 L79 118 L50 118 Z" fill="#eee"/>
+        </svg>
+      </div>
+      <button class="replay-btn" id="replay">پخش دوباره از ابتدا</button>
+    </section>
+
+  </div>
+</div>
+
+<audio id="bg-audio" loop preload="none">
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  const musicModal = document.getElementById('music-modal');
+  const audio = document.getElementById('bg-audio');
+  const btnMute = document.getElementById('btn-mute');
+  const btnPlay = document.getElementById('btn-play');
+
+  document.getElementById('music-yes').onclick = () => {
+    musicModal.classList.add('hidden');
+    audio.play().catch(()=>{});
+  };
+  document.getElementById('music-no').onclick = () => {
+    musicModal.classList.add('hidden');
+    audio.muted = true;
+    btnMute.textContent = '🔇';
+  };
+
+  btnMute.onclick = () => {
+    audio.muted = !audio.muted;
+    btnMute.textContent = audio.muted ? '🔇' : '🔈';
+  };
+  btnPlay.onclick = () => {
+    if(audio.paused){ audio.play().catch(()=>{}); btnPlay.textContent='⏸'; }
+    else { audio.pause(); btnPlay.textContent='▶'; }
+  };
+
+  // info popup
+  const infoPopup = document.getElementById('info-popup');
+  document.getElementById('btn-info').onclick = () => infoPopup.classList.add('show');
+  document.getElementById('info-close').onclick = () => infoPopup.classList.remove('show');
+
+  /* ============ SLIDESHOW ENGINE (vertical scroll) ============ */
+  const track = document.getElementById('track');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dotsWrap = document.getElementById('dots');
+  let current = 0;
+
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(d);
+  });
+  const dotEls = Array.from(dotsWrap.children);
+
+  function setActive(i){
+    current = i;
+    dotEls.forEach((d,idx) => d.classList.toggle('active', idx === current));
+  }
+
+  function goTo(i){
+    const target = Math.max(0, Math.min(slides.length - 1, i));
+    slides[target].scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  function next(){ if(current < slides.length - 1) goTo(current + 1); }
+  function prev(){ if(current > 0) goTo(current - 1); }
+
+  // keep dots/current in sync with the user's own scrolling
+  const slideObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting && entry.intersectionRatio >= 0.6){
+        const idx = slides.indexOf(entry.target);
+        if(idx !== -1) setActive(idx);
+      }
+    });
+  }, {root: track, threshold: 0.6});
+  slides.forEach(s => slideObserver.observe(s));
+
+  // keyboard support (desktop) - scroll down/up instead of clicking
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'ArrowDown' || e.key === 'PageDown'){ e.preventDefault(); next(); }
+    if(e.key === 'ArrowUp' || e.key === 'PageUp'){ e.preventDefault(); prev(); }
+  });
+
+  // auto-advance: scroll to the next slide every 5 seconds, stopping at the last slide
+  setInterval(() => {
+    if(current < slides.length - 1) next();
+  }, 5000);
+
+  // envelope open (click on the wax seal) -> advance to slide 2
+  const envelope = document.getElementById('envelope');
+  const envelopeImg = document.getElementById('envelope-img');
+  const sealHotspot = document.getElementById('seal-hotspot');
+
+  // fraction position of the wax seal within the ORIGINAL photo (measured by eye)
+  const SEAL_X_FRAC = 0.315;   // center x, as fraction of image width
+  const SEAL_Y_FRAC = 0.498;   // center y, as fraction of image height
+  const SEAL_R_FRAC = 0.125;   // radius, as fraction of image width
+
+  function positionSeal(){
+    const nw = envelopeImg.naturalWidth, nh = envelopeImg.naturalHeight;
+    if(!nw || !nh) return;
+    const cw = envelope.clientWidth, ch = envelope.clientHeight;
+    // object-fit:cover uniform scale factor
+    const scale = Math.max(cw / nw, ch / nh);
+    const renderedW = nw * scale, renderedH = nh * scale;
+    const offsetX = (renderedW - cw) / 2;
+    const offsetY = (renderedH - ch) / 2;
+    const sealX = SEAL_X_FRAC * renderedW - offsetX;
+    const sealY = SEAL_Y_FRAC * renderedH - offsetY;
+    const sealR = SEAL_R_FRAC * renderedW;
+    sealHotspot.style.left = sealX + 'px';
+    sealHotspot.style.top = sealY + 'px';
+    sealHotspot.style.width = (sealR * 2) + 'px';
+    sealHotspot.style.height = (sealR * 2) + 'px';
+    sealHotspot.style.transform = 'translate(-50%,-50%)';
+  }
+
+  if(envelopeImg.complete && envelopeImg.naturalWidth){
+    positionSeal();
+  } else {
+    envelopeImg.addEventListener('load', positionSeal);
+  }
+  window.addEventListener('resize', positionSeal);
+  window.addEventListener('orientationchange', positionSeal);
+
+  sealHotspot.addEventListener('click', () => {
+    if(envelope.classList.contains('open')) return;
+    envelope.classList.add('open');
+    setTimeout(() => { next(); }, 700);
+  });
+
+  // replay
+  document.getElementById('replay').onclick = () => {
+    envelope.classList.remove('open');
+    goTo(0);
+  };
+
+  /* ============ COUNTDOWN ============ */
+  // Thursday, 2 Mehr 1405 = 24 September 2026, 19:00 (Tehran time, UTC+03:30)
+  const EVENT_DATE = new Date('2026-09-24T19:00:00+03:30');
+  const cdDays = document.getElementById('cd-days');
+  const cdHours = document.getElementById('cd-hours');
+  const cdMins = document.getElementById('cd-mins');
+  const cdSecs = document.getElementById('cd-secs');
+  const faDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  function toFa(n){
+    return String(n).padStart(2,'0').split('').map(d => faDigits[d] || d).join('');
+  }
+  function updateCountdown(){
+    const diff = EVENT_DATE.getTime() - Date.now();
+    if(diff <= 0){
+      cdDays.textContent = cdHours.textContent = cdMins.textContent = cdSecs.textContent = '۰۰';
+      return;
+    }
+    const totalSec = Math.floor(diff / 1000);
+    const days = Math.floor(totalSec / 86400);
+    const hours = Math.floor((totalSec % 86400) / 3600);
+    const mins = Math.floor((totalSec % 3600) / 60);
+    const secs = totalSec % 60;
+    cdDays.textContent = toFa(days);
+    cdHours.textContent = toFa(hours);
+    cdMins.textContent = toFa(mins);
+    cdSecs.textContent = toFa(secs);
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+</script>
+</body>
+</html>
